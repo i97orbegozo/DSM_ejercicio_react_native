@@ -3,28 +3,21 @@ import React, { Component } from 'react';
 import { ScrollView, FlatList, SafeAreaView } from 'react-native';
 import {Card, Text, ListItem} from 'react-native-elements';
 
-import { ACTIVIDADES } from '../comun/actividades';
-
 import { baseUrl } from '../comun/comun';
+import { connect } from 'react-redux';
 
 
-function RenderQuienesSomos(props) {
-    
-
+const mapStateToProps = state =>  {
+    return{
+        actividades: state.actividades
+    }
 }
 
 class QuienesSomos extends Component {
-    constructor(props){
-        super(props);
-        this.state = {
-            actividad: ACTIVIDADES 
-        }
-    }
 
     render(){
-        
         const renderQuienesSomosItem = ({item, index}) => {
-            console.log({uri: baseUrl + item.imagen});
+            
             return (
                     <ListItem
                         key={index}
@@ -60,7 +53,7 @@ class QuienesSomos extends Component {
                     constainerStyle={{marginBottom: 10}}
                 >
                     <FlatList
-                        data={this.state.actividad}
+                        data={this.props.actividades.actividades}
                         renderItem={renderQuienesSomosItem}
                         keyExtractor={item => item.id.toString()}
                     />
@@ -72,4 +65,4 @@ class QuienesSomos extends Component {
     }
 }
 
-export default QuienesSomos;
+export default connect(mapStateToProps)(QuienesSomos);
