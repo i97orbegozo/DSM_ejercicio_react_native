@@ -18,6 +18,7 @@ import DetalleExcursion from './DetalleExcursionComponent';
 import Contacto from './ContactoComponent';
 import QuienesSomos from './QuienesSomosComponent';
 import Home from './HomeComponent';
+import PruebaEsfuerzo from './PruebaEsfuerzoComponent';
 
 
 const Stack = createStackNavigator();
@@ -111,6 +112,34 @@ function ContactoNavegador({navigation}){
     </Stack.Navigator>
   );
 }
+
+function PruebaEsfuerzoNavegador({navigation}){
+  return(
+    <Stack.Navigator
+      initialRouteName='Home'
+      headerMode='screen'
+      screenOptions={{
+        headerTintColor: '#fff',
+        headerStyle: { backgroundColor: '#015afc' },
+        headerTitleStyle: { color: '#fff'},
+        headerLeft: () => (
+          <Icon name="menu" 
+            size={28} 
+            color='white'
+            onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}/>
+          ),
+    }}>
+      <Stack.Screen
+        name="Prueba de Esfuerzo"
+        component={PruebaEsfuerzo}
+        options={{
+          title: 'Prueba de Esfuerzo',
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 function QuienesSomosNavegador({navigation}){
   return(
     <Stack.Navigator
@@ -201,6 +230,20 @@ function DrawerNavegador(){
           )
         }}  
       />
+
+      <Drawer.Screen name='Prueba de Esfuerzo' component={PruebaEsfuerzoNavegador}
+        options={{
+          drawerIcon: ({ tintColor }) => (
+            <Icon 
+              name='heartbeat'
+              type='font-awesome'
+              size={22}
+              color={tintColor}
+            />
+          )
+        }}
+      />
+
       <Drawer.Screen name='Contacto' component={ContactoNavegador}
         options={{
           drawerIcon: ({ tintColor }) => (
