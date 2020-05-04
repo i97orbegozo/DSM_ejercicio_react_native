@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 
-import { ScrollView, FlatList, SafeAreaView } from 'react-native';
+import { ScrollView, FlatList, SafeAreaView, View } from 'react-native';
 import {Card, Text, ListItem} from 'react-native-elements';
 
 import { baseUrl } from '../comun/comun';
 import { connect } from 'react-redux';
+import { IndicadorActividad } from './IndicadorActividadComponent';
 
 
 const mapStateToProps = state =>  {
@@ -30,37 +31,51 @@ function HistoriaRender(){
 }
 
 function ActividadesRecursosRender(props){
-    return(
-        <Card
-            title="Actividades y recursos"
-            constainerStyle={{marginBottom: 10}}
-        >
-            <FlatList
-                data={props.data}
-                renderItem={props.renderItem}
-                keyExtractor={item => item.id.toString()}
+
+    if (props.isLoading){
+        return(
+            <IndicadorActividad/>
+        );
+    }else if(props.errMess){
+        return(
+            <View>
+                <Text>{props.errMess}</Text>
+            </View>
+        );
+    }
+    else{
+        return(
+            <Card
+                title="Actividades y recursos"
+                constainerStyle={{marginBottom: 10}}
+            >
+                <FlatList
+                    data={props.data}
+                    renderItem={props.renderItem}
+                    keyExtractor={item => item.id.toString()}
+                />
+            </Card>
+        );
+    }
+}
+
+const renderQuienesSomosItem = ({item, index}) => {
+            
+    return (
+            <ListItem
+                key={index}
+                title={item.nombre}
+                subtitle={item.descripcion}
+                hideChevron={true}
+                //onPress={() => navigate('DetalleExcursion', { excursionId: item.id })}
+                leftAvatar={{ source: {uri: baseUrl + item.imagen}}}
             />
-        </Card>
     );
 }
+
 class QuienesSomos extends Component {
 
-    render(){
-        const renderQuienesSomosItem = ({item, index}) => {
-            
-            return (
-                    <ListItem
-                        key={index}
-                        title={item.nombre}
-                        subtitle={item.descripcion}
-                        hideChevron={true}
-                        //onPress={() => navigate('DetalleExcursion', { excursionId: item.id })}
-                        leftAvatar={{ source: {uri: baseUrl + item.imagen}}}
-                    />
-            );
-        }
-
-       
+    render(){       
         return(
             <>
             <SafeAreaView style={{ flex: 1 }}>
@@ -70,6 +85,8 @@ class QuienesSomos extends Component {
                 <ActividadesRecursosRender
                     data={this.props.actividades.actividades}
                     renderItem={renderQuienesSomosItem}
+                    isLoading ={this.props.actividades.isLoading}
+                    errMess={this.props.actividades.errMess} 
                 />
             </ScrollView>
             </SafeAreaView>
