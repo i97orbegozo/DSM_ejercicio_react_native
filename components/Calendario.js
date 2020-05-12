@@ -5,6 +5,9 @@ import { ListItem } from 'react-native-elements';
 import { baseUrl } from '../comun/comun';
 import { connect } from 'react-redux';
 
+import { IndicadorActividad } from './IndicadorActividadComponent';
+console.disableYellowBox = true;
+
 const mapStateToProps = state =>  {
     return{
         excursiones: state.excursiones

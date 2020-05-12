@@ -31,6 +31,22 @@ export const addComentarios = (comentarios) => ({
     payload: comentarios
 });
 
+// Add new comentario -------------------------------------
+
+export const addNewComentario = (comentarios) => ({
+    type: ActionTypes.ADD_COMENTARIO,
+    payload: comentarios
+});
+
+export const postComentario = (comentario) => (dispatch) => {
+    setTimeout(() => {
+        dispatch(addNewComentario(comentario));
+    }, 2000);
+    console.log(comentario)
+};
+
+// -----------------------------------------
+
 export const fetchExcursiones = () => (dispatch) => {
 
     dispatch(excursionesLoading());
