@@ -19,6 +19,7 @@ import Contacto from './ContactoComponent';
 import QuienesSomos from './QuienesSomosComponent';
 import Home from './HomeComponent';
 import PruebaEsfuerzo from './PruebaEsfuerzoComponent';
+import VistaFavoritos from './VistaFavoritosComponent';
 
 
 const Stack = createStackNavigator();
@@ -58,6 +59,35 @@ function CalendarioNavegador({navigation}) {
     </Stack.Navigator>
   );
 }
+
+function VistaFavoritosNavegador({navigation}) {
+  return (
+    <Stack.Navigator
+      initialRouteName="Excursiones Favoritas"
+      headerMode="screen"
+      screenOptions={{
+        headerTintColor: '#fff',
+        headerStyle: { backgroundColor: '#015afc' },
+        headerTitleStyle: { color: '#fff' },
+        headerLeft: () => (
+          <Icon name="menu" 
+            size={28} 
+            color='white'
+            onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}/>
+          )
+      }}
+    >
+      <Stack.Screen
+        name="Vista favoritos"
+        component={VistaFavoritos}
+        options={{
+          title: 'Vista favoritos',
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 
 function HomeNavegador({navigation}){
   return(
@@ -236,6 +266,19 @@ function DrawerNavegador(){
           drawerIcon: ({ tintColor }) => (
             <Icon 
               name='heartbeat'
+              type='font-awesome'
+              size={22}
+              color={tintColor}
+            />
+          )
+        }}
+      />
+
+      <Drawer.Screen name='Excursiones Favoritas' component={VistaFavoritosNavegador}
+        options={{
+          drawerIcon: ({ tintColor }) => (
+            <Icon 
+              name='thumbs-up'
               type='font-awesome'
               size={22}
               color={tintColor}
