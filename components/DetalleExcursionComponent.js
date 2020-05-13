@@ -1,10 +1,12 @@
-import React from 'react';
-import { ScrollView, FlatList, Text, View, StyleSheet, Modal } from 'react-native';
+import React, { useRef } from 'react';
+import { ScrollView, FlatList, Text, View, StyleSheet, Modal, PanAlert, Responder, PanResponder, Alert } from 'react-native';
 import { Card, Icon, Rating, Input, Button} from 'react-native-elements';
 
 import { baseUrl, colorGaztaroaClaro, colorGaztaroaOscuro } from '../comun/comun';
 import { connect } from 'react-redux';
 import { postFavorito, postComentario} from "../redux/ActionCreators";
+
+import * as Animatable from 'react-native-animatable';
 
 
 const mapStateToProps = state =>  {
@@ -23,35 +25,86 @@ const mapDispatchToProps = dispatch => ({
 function RenderExcursion(props) {
     const excursion = props.excursion;
 
+    const cardAnimada = useRef(null);
+
+    const reconocerDragDerechaIzquierda = ({moveX, moveY, dx, dy}) => {
+        if ( dx < -50 )
+            return true;
+        else
+            return false;
+    }
+
+    const reconocerDragIzquierdaDerecha = ({moveX, moveY, dx, dy}) => {
+        if ( dx > -50 )
+            return true;
+        else
+            return false;
+    }
+
+    const panResponder = PanResponder.create({
+        onStartShouldSetPanResponder: (e, gestureState) => {
+            return true;
+        },
+        onPanResponderGrant: () => {
+            cardAnimada.current.rubberBand(1000)
+                .then(endState => console.log(endState.finished ? 'terminado' : 'cancelado'));
+        },
+        onPanResponderEnd: (e, gestureState) => {
+            console.log("PanResponder finalizado", gestureState);
+            if (reconocerDragDerechaIzquierda(gestureState))
+                Alert.alert(
+                        "Añadir favorito",
+                        'Confirmar que desea añadir' + excursion.nombre + ' a favoritos:',
+                        [
+                            {text: 'Cancelar', onPress: () => console.log('Excursion no añadida a favoritos'), style: 'cancel'},
+                            {text: 'Ok', onPress: () => {props.favorita ? console.log('La excursion ya se encuentra entre las favoritas') : props.onPress()}}
+                        ],
+                        {cancelable: false}
+                );
+            if (reconocerDragIzquierdaDerecha (gestureState)) {
+                props.onPressComentary();
+            }
+            return true;
+        }
+    })
+
     if (excursion != null){
         return(
-            <Card
-                featuredTitle={excursion.nombre}
-                image={{uri: baseUrl + excursion.imagen}}                
+            <Animatable.View 
+                animation="fadeInDown" 
+                duration={2000} 
+                delay={500}
+                ref={cardAnimada}
+                {...panResponder.panHandlers}
             >
-                <Text style={styles.formRow}>
-                    {excursion.descripcion}
-                </Text>
+                <Card
+                    featuredTitle={excursion.nombre}
+                    image={{uri: baseUrl + excursion.imagen}}                
+                >
+                    <Text style={styles.formRow}>
+                        {excursion.descripcion}
+                    </Text>
 
-                <Icon 
-                    raised
-                    reverse
-                    name={props.favorita ? 'heart' : 'heart-o'}
-                    type='font-awesome'
-                    color='#f50'
-                    onPress={() => props.favorita ? console.log('La excursión ya se encuentra entre las favoritas') : props.onPress()}
-                    style={styles.formRow}
-                />
-                <Icon 
-                    raised
-                    reverse
-                    name={'pencil'}
-                    type='font-awesome'
-                    color= {colorGaztaroaOscuro}
-                    onPress={() => props.onPressComentary()}
-                    style={styles.formRow}
-                />
-            </Card>
+                    <Icon 
+                        raised
+                        reverse
+                        name={props.favorita ? 'heart' : 'heart-o'}
+                        type='font-awesome'
+                        color='#f50'
+                        onPress={() => props.favorita ? console.log('La excursión ya se encuentra entre las favoritas') : props.onPress()}
+                        style={styles.formRow}
+                    />
+                    <Icon 
+                        raised
+                        reverse
+                        name={'pencil'}
+                        type='font-awesome'
+                        color= {colorGaztaroaOscuro}
+                        onPress={() => props.onPressComentary()}
+                        style={styles.formRow}
+                    />
+                </Card>
+            </Animatable.View>
         );
     }else { 
         return(<View></View>);
@@ -74,13 +127,15 @@ function RenderComentario(props){
     };
 
     return (
-        <Card title='Comentarios'>
-             <FlatList 
-                data={comentarios}
-                renderItem={renderCommentarioItem}
-                keyExtractor={item => item.id.toString()}
-            />
-        </Card>
+        <Animatable.View animation="fadeInDown" duration={2000} delay={500}>
+            <Card title='Comentarios'>
+                <FlatList 
+                    data={comentarios}
+                    renderItem={renderCommentarioItem}
+                    keyExtractor={item => item.id.toString()}
+                />
+            </Card>
+        </Animatable.View>
     );
 }
 
