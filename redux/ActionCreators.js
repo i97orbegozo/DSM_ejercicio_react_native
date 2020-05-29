@@ -1,8 +1,10 @@
 import * as ActionTypes from './ActionTypes';
 import { baseUrl } from '../comun/comun';
 
+// Comentarios ------------------------------------------------------------------
+
 export const fetchComentarios = () => (dispatch) => {
-    return fetch(baseUrl + 'comentarios')
+    return fetch(baseUrl + 'comentarios.json')
     .then(response => {
         if (response.ok) {
           return response;
@@ -39,19 +41,17 @@ export const addNewComentario = (comentarios) => ({
 });
 
 export const postComentario = (comentario) => (dispatch) => {
-    setTimeout(() => {
-        dispatch(addNewComentario(comentario));
-    }, 2000);
-    console.log(comentario)
+    dispatch(addNewComentario(comentario));
+
 };
 
-// -----------------------------------------
+// Excursiones -----------------------------------------
 
 export const fetchExcursiones = () => (dispatch) => {
 
     dispatch(excursionesLoading());
 
-    return fetch(baseUrl + 'excursiones')
+    return fetch(baseUrl + 'excursiones.json')
     .then(response => {
         if (response.ok) {
           return response;
@@ -84,11 +84,13 @@ export const addExcursiones = (excursiones) => ({
     payload: excursiones
 });
 
+// Cabeceras ------------------------------------------------------
+
 export const fetchCabeceras = () => (dispatch) => {
     
     dispatch(cabecerasLoading());
 
-    return fetch(baseUrl + 'cabeceras')
+    return fetch(baseUrl + 'cabeceras.json')
     .then(response => {
         if (response.ok) {
             return response;
@@ -121,11 +123,14 @@ export const addCabeceras = (cabeceras) => ({
     payload: cabeceras
 });
 
+
+// Actividades ---------------------------------------------------------------------
+
 export const fetchActividades = () => (dispatch) => {
     
     dispatch(actividadesLoading());
 
-    return fetch(baseUrl + 'actividades')
+    return fetch(baseUrl + 'actividades.json')
     .then(response => {
         if (response.ok) {
             return response;
@@ -161,9 +166,8 @@ export const addActividades = (actividades) => ({
 // -------- Añadir favorito al estado global segun ID ----------------
 
 export const postFavorito = (excursionId) => (dispatch) => {
-    setTimeout(() => {
-        dispatch(addFavorito(excursionId));
-    }, 2000);
+    dispatch(addFavorito(excursionId));
+
 };
 
 export const addFavorito = (excursionId) => ({

@@ -79,7 +79,7 @@ function RenderExcursion(props) {
             >
                 <Card
                     featuredTitle={excursion.nombre}
-                    image={{uri: baseUrl + excursion.imagen}}                
+                    image={{uri: excursion.imagen}}                
                 >
                     <Text style={styles.formRow}>
                         {excursion.descripcion}
@@ -188,6 +188,8 @@ class DetalleExcursion extends React.Component {
     // RENDER ------------------------------
     render(){
         const {excursionId} = this.props.route.params;
+        console.log('Caaaaaaaaaaaaaaaacccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+        console.log(this.props.comentarios.comentarios.filter((comentario) => comentario.excursionId === excursionId));
         return(
             <ScrollView>
                 <RenderExcursion 
@@ -197,7 +199,7 @@ class DetalleExcursion extends React.Component {
                     onPressComentary={()=>this.toogleModal()}
                 />
                  <RenderComentario 
-                    comentarios={this.props.comentarios.comentarios.filter((comentario) => comentario.excursionId === excursionId)}
+                     comentarios={this.props.comentarios.comentarios.filter((comentario) => comentario.excursionId === excursionId)}
                 />
 
                 <Modal animationType={'slide'} transparent={false}

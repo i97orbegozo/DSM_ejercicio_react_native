@@ -56,8 +56,8 @@ class VistaFavoritos extends React.Component {
                         title={item.nombre}
                         subtitle={item.descripcion}
                         hideChevron={true}
-                        onPress={() => navigate('DetalleExcursion', { excursionId: item.id })}
-                        leftAvatar={{ source: { uri: baseUrl + item.imagen}}}
+                       // onPress={() => navigate('DetalleExcursion', { excursionId: item.id })}
+                        leftAvatar={{ source: { uri: item.imagen}}}
                         onLongPress={() =>  Alert.alert(
                             "Borrar Excursion Favorita?",
                             "Confime que desea borrar la excursion" + item.nombre,
