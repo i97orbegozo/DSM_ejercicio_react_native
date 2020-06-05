@@ -22,6 +22,8 @@ import PruebaEsfuerzo from './PruebaEsfuerzoComponent';
 import VistaFavoritos from './VistaFavoritosComponent';
 
 
+
+
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 

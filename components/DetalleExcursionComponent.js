@@ -6,6 +6,8 @@ import { baseUrl, colorGaztaroaClaro, colorGaztaroaOscuro } from '../comun/comun
 import { connect } from 'react-redux';
 import { postFavorito, postComentario} from "../redux/ActionCreators";
 
+import MapView , { Marker }from 'react-native-maps';
+
 import * as Animatable from 'react-native-animatable';
 
 
@@ -34,12 +36,12 @@ function RenderExcursion(props) {
             return false;
     }
 
-    const reconocerDragIzquierdaDerecha = ({moveX, moveY, dx, dy}) => {
-        if ( dx > -50 )
-            return true;
-        else
-            return false;
-    }
+    // const reconocerDragIzquierdaDerecha = ({moveX, moveY, dx, dy}) => {
+    //     if ( dx > -50 )
+    //         return true;
+    //     else
+    //         return false;
+    // }
 
     const panResponder = PanResponder.create({
         onStartShouldSetPanResponder: (e, gestureState) => {
@@ -61,12 +63,14 @@ function RenderExcursion(props) {
                         ],
                         {cancelable: false}
                 );
-            if (reconocerDragIzquierdaDerecha (gestureState)) {
-                props.onPressComentary();
-            }
+            // if (reconocerDragIzquierdaDerecha (gestureState)) {
+            //     props.onPressComentary();
+            // }
             return true;
         }
     })
+
+    
 
     if (excursion != null){
         return(
@@ -84,25 +88,35 @@ function RenderExcursion(props) {
                     <Text style={styles.formRow}>
                         {excursion.descripcion}
                     </Text>
-
-                    <Icon 
-                        raised
-                        reverse
-                        name={props.favorita ? 'heart' : 'heart-o'}
-                        type='font-awesome'
-                        color='#f50'
-                        onPress={() => props.favorita ? console.log('La excursión ya se encuentra entre las favoritas') : props.onPress()}
-                        style={styles.formRow}
-                    />
-                    <Icon 
-                        raised
-                        reverse
-                        name={'pencil'}
-                        type='font-awesome'
-                        color= {colorGaztaroaOscuro}
-                        onPress={() => props.onPressComentary()}
-                        style={styles.formRow}
-                    />
+                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+                        <Icon 
+                            raised
+                            reverse
+                            name={props.favorita ? 'heart' : 'heart-o'}
+                            type='font-awesome'
+                            color='#f50'
+                            onPress={() => props.favorita ? console.log('La excursión ya se encuentra entre las favoritas') : props.onPress()}
+                            style={styles.formRow}
+                        />
+                        <Icon 
+                            raised
+                            reverse
+                            name={'pencil'}
+                            type='font-awesome'
+                            color= {colorGaztaroaOscuro}
+                            onPress={() => props.onPressModal("comentary")}
+                            style={styles.formRow}
+                        />
+                        <Icon 
+                            raised
+                            reverse
+                            name={'map'}
+                            type='font-awesome'
+                            color= '#14006A'
+                            onPress={() => props.onPressModal("map")}
+                            style={styles.formRow}
+                        />
+                    </View>
                 </Card>
             </Animatable.View>
         );
@@ -149,7 +163,8 @@ class DetalleExcursion extends React.Component {
             autor: '',
             comentario: '',
             rating: 3,
-            showModal: false
+            showModal: false,
+            showModal2: false
         }
     }
     marcarFavorito(excursionId){
@@ -181,22 +196,32 @@ class DetalleExcursion extends React.Component {
         });
     }
 
-    toogleModal(){
-        this.setState({showModal: !this.state.showModal});
+    toogleModal(which){
+        console.log(which)
+        switch (which){
+            case "comentary": this.setState({showModal: !this.state.showModal});
+            break;
+            case "map":  this.setState({showModal2: !this.state.showModal2});
+            break;
+            default : ''
+        }
     }
+    
 
     // RENDER ------------------------------
     render(){
         const {excursionId} = this.props.route.params;
-        console.log('Caaaaaaaaaaaaaaaacccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
         console.log(this.props.comentarios.comentarios.filter((comentario) => comentario.excursionId === excursionId));
+        const mapInfo = { posicionamiento: this.props.excursiones.excursiones[+excursionId].posicionamiento,
+            title: this.props.excursiones.excursiones[+excursionId].nombre};
+        console.log(mapInfo)
         return(
             <ScrollView>
                 <RenderExcursion 
                     excursion={this.props.excursiones.excursiones[+excursionId]}
                     favorita={this.props.favoritos.some(el => el === excursionId)}
                     onPress={() => this.marcarFavorito(excursionId)}
-                    onPressComentary={()=>this.toogleModal()}
+                    onPressModal={(which)=>this.toogleModal(which)}
                 />
                  <RenderComentario 
                      comentarios={this.props.comentarios.comentarios.filter((comentario) => comentario.excursionId === excursionId)}
@@ -239,6 +264,41 @@ class DetalleExcursion extends React.Component {
                         />
                     </View>
                 </Modal>
+
+                <Modal animationType={'slide'} transparent={false}
+                    visible={this.state.showModal2}
+                    onRequestClose={()=>{this.toogleModal()}}
+                    type='clear'
+                >
+                    
+                    <View style={styles.container}>
+                        <MapView style={styles.mapStyle}
+                        initialRegion={{
+                            latitude: mapInfo.posicionamiento.latitud,
+                            longitude: mapInfo.posicionamiento.longitud,
+                            latitudeDelta: 0.0922,
+                            longitudeDelta: 0.0421,
+                        }}
+                            mapType='satellite'
+                        >
+                        <Marker 
+                            coordinate={{latitude: mapInfo.posicionamiento.latitud,
+                                longitude: mapInfo.posicionamiento.longitud}}
+                            title={mapInfo.title}
+                            description={mapInfo.posicionamiento.latitud +"," +mapInfo.posicionamiento.longitud}
+                            
+                       >
+                        </Marker>  
+                        </MapView>
+                        
+                    </View>
+                    <Button style={{height: "40"}}
+                            onPress={()=>{this.toogleModal("map")}}
+                            color={colorGaztaroaOscuro}
+                            title='volver'
+                            type='clear'
+                        />
+                </Modal>
             </ScrollView>        
         );
 
@@ -274,7 +334,23 @@ const styles = StyleSheet.create({
     modalText: {
         fontSize: 18,
         margin: 10
-    }
+    },
+
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      mapStyle: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        // width: Dimensions.get('window').width,
+        // height: Dimensions.get('window').height,
+      }
 
 });
 
